@@ -14,9 +14,8 @@ public class Printer extends Thread {
 	public void run() {
 		for(int i = 0; i < nPrints; i++) {
 			try {
-				sleep(10);
+				sleep(10);//приостанавливается
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			System.out.println(symb);
