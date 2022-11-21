@@ -5,7 +5,7 @@ public class Truck extends Thread{
 	private int nLoads;
 	private static long elevator1;
 	private static long elevator2;
-	private static final Object mutex = new Object();
+	//private static final Object mutex = new Object();
 	
 	public Truck(int load, int nLoads) {
 		this.load = load;
