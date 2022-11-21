@@ -1,6 +1,7 @@
 package telran.race;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class Race extends Thread{
@@ -16,11 +17,11 @@ public class Race extends Thread{
 		this.maxSleep = maxSleep;
 		winnersList = new LinkedHashMap<>();
 	}
-	public Map<Integer, Long> getWinner() {
+	public Map<Integer, Long> getWinners() {
 		return winnersList;
 	}
-	public synchronized static void setWinners(int winner, long time, Map<Integer, Long> winnersList) {
-		winnersList.put(winner, time);
+	public synchronized static void setWinners(int winner, Instant time, Map<Integer, Long> winnersList) {
+		winnersList.put(winner, ChronoUnit.MILLIS.between(time, Instant.now()));
 	}
 	public void setTime(Instant time) {
 		this.time = time;

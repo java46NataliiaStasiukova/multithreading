@@ -37,10 +37,10 @@ public class RaceAppl {
 	private static void displayWinner(Race race) {
 		int[] index = {0};
 		System.out.println("Runners List: \n"
-				+ "place	racer_number	timme");
-		race.getWinner().forEach((k, v) -> 
-		System.out.println(++index[0] + " ".repeat(15 - String.valueOf(index[0]).length()) 
-				+ k + " ".repeat(8 - String.valueOf(k.intValue()).length()) + v));
+				+ "place	racer_number	time");
+		race.getWinners().forEach((k, v) -> 
+		System.out.println(++index[0] + " ".repeat(13 - String.valueOf(index[0]).length()) 
+				+ k + " ".repeat(11 - String.valueOf(k.intValue()).length()) + v));
 	}
 
 	private static void joinRunners(Runner[] runners) {
