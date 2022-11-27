@@ -3,15 +3,17 @@ package telran.multithreading;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class Truck extends Thread{
+public class Truck2 extends Truck{
 	private int load;
 	private int nLoads;
 	private static long elevator1;
 	private static long elevator2;
 	private static long counter = 0;
-	private static final Lock lock = new ReentrantLock(true);
+	private static final Lock lock1 = new ReentrantLock(true);
+	private static final Lock lock2 = new ReentrantLock(true);
 	
-	public Truck(int load, int nLoads) {
+	public Truck2(int load, int nLoads) {
+		super(nLoads, nLoads);
 		this.load = load;
 		this.nLoads = nLoads;
 	}
@@ -32,11 +34,11 @@ public class Truck extends Thread{
 	static private void loadElevator2(int load) {
 		 boolean done = false;
 		 while(!done) {
-			 if(lock.tryLock()) {
+			 if(lock2.tryLock()) {
 				 try {
 					 elevator2 += load;
 				 } finally {
-					 lock.unlock();
+					 lock2.unlock();
 					 done = true;
 				 }
 			 }
@@ -49,20 +51,18 @@ public class Truck extends Thread{
 	static private void loadElevator1(int load) {
 		boolean done = false;
 		 while(!done) {
-			 if(lock.tryLock()) {
+			 if(lock1.tryLock()) {
 				 try {
 					 elevator1 += load;
 				 } finally {
-					 lock.unlock();
+					 lock1.unlock();
 					 done = true;
 				 }
 			 }
 			 if(!done) {
 				 counter++; 
-			 }
-			 
+			 } 
 		 }
-	
 	}
 
 	public static long getElevator1() {
