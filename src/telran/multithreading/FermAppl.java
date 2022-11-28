@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
 public class FermAppl {
 
 	private static final int N_TRUCKS = 200;
-	private static final int N_LOADS = 500;
+	private static final int N_LOADS = 5000;
 
 	public static void main(String[] args) {
 		

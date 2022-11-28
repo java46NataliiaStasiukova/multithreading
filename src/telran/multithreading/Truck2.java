@@ -1,5 +1,6 @@
 package telran.multithreading;
 
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -8,7 +9,7 @@ public class Truck2 extends Truck{
 	private int nLoads;
 	private static long elevator1;
 	private static long elevator2;
-	private static long counter = 0;
+	private static AtomicLong counter= new AtomicLong(0);
 	private static final Lock lock1 = new ReentrantLock(true);
 	private static final Lock lock2 = new ReentrantLock(true);
 	
@@ -28,7 +29,7 @@ public class Truck2 extends Truck{
 	
 	public static long getWaitingCounter() {
 
-		return counter;
+		return counter.get();
 	}
 
 	static private void loadElevator2(int load) {
@@ -43,7 +44,7 @@ public class Truck2 extends Truck{
 				 }
 			 }
 			 if(!done) {
-				 counter++; 
+				 counter.addAndGet(1); 
 			 }
 		 }
 	}
@@ -58,9 +59,9 @@ public class Truck2 extends Truck{
 					 lock1.unlock();
 					 done = true;
 				 }
-			 }
+			 }	
 			 if(!done) {
-				 counter++; 
+				 counter.addAndGet(1); 
 			 } 
 		 }
 	}
