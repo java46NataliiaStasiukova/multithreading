@@ -1,6 +1,5 @@
 package telran.race;
 
-
 public class Runner extends Thread {
 private Race race;
 private int runnerId;
@@ -21,17 +20,6 @@ public void run() {
 		}
 		System.out.println(runnerId);
 	}
-	
-	
-	race.lock.lock();//critical section beginning
-	try {
-		race.setWinner(runnerId);
-	} finally {
-		race.lock.unlock();//critical section ending
-	}
-	
-
+	race.setWinner(runnerId);
 }
-
-
 }
