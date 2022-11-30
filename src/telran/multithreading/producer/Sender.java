@@ -1,9 +1,9 @@
 package telran.multithreading.producer;
 
 import telran.multithreading.MessageBox;
+import telran.multithreading.consumer.Receiver;
 
 public class Sender extends Thread {
-	private static final long TIME_OUT = 10;
 	private MessageBox messageBox;
 	private int nMessages;
 	
@@ -18,11 +18,13 @@ public class Sender extends Thread {
 			try {
 				messageBox.put(String.format("message%d from thread ", i));
 			} catch (InterruptedException e) {
-
 				e.printStackTrace();
 			}
-		}
+		} 
+		Receiver.stopReceiver();
+		
 	}
+	
 
 	
 }
