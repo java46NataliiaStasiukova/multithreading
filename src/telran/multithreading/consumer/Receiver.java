@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Receiver extends Thread {
 	private MessageBox messageBox;
-	static boolean running = true;
+	static volatile boolean running = true;
 	static String message;
 	private static AtomicInteger messagesCounter = new AtomicInteger(0);
 	private static AtomicInteger tmp = new AtomicInteger(-1);

@@ -1,7 +1,6 @@
 package telran.multithreading.producer;
 
 import telran.multithreading.MessageBox;
-import telran.multithreading.consumer.Receiver;
 
 public class Sender extends Thread {
 	private MessageBox messageBox;
@@ -21,8 +20,6 @@ public class Sender extends Thread {
 				e.printStackTrace();
 			}
 		} 
-		Receiver.stopReceiver();
-		
 	}
 	
 

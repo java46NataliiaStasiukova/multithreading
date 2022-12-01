@@ -18,6 +18,7 @@ public class SenderResiverAppl {
 		sender.start();
 		sender.join();		
 		//Thread.sleep(100);//FIXME remove this statement
+		Receiver.stopReceiver();
 		IntStream.range(0, N_RECEIVERS).forEach(i -> {
 			receivers[i].interrupt();
 		});	
