@@ -17,20 +17,20 @@ public class SenderResiverAppl {
 		Sender sender = new Sender(messageBox, N_MESSAGES);
 		sender.start();
 		sender.join();		
-		//Thread.sleep(100);//FIXME remove this statement
 		Receiver.stopReceiver();
-		IntStream.range(0, N_RECEIVERS).forEach(i -> {
+		IntStream.range(0, N_RECEIVERS).forEach(i -> {//stop receivers
 			receivers[i].interrupt();
 		});	
-		
-		printCounterValue(receivers);
-
-	}
-
-	private static void printCounterValue(Receiver[] receivers) {
+		IntStream.range(0, N_RECEIVERS).forEach(i -> {//wait receivers
+			try {
+				receivers[i].join();
+			} catch (InterruptedException e) {
+				
+				e.printStackTrace();
+			}
+		});	
 		System.out.println(Receiver.getMessagesCounter());	
 	}
-
 	private static void startReceivers(Receiver[] receivers, MessageBox messageBox) {
 		IntStream.range(0, N_RECEIVERS).forEach(i -> {
 			receivers[i] = new Receiver(messageBox);
