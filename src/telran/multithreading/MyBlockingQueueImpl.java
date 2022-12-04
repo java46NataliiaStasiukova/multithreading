@@ -4,141 +4,280 @@ import java.util.*;
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.*;
 
 public class MyBlockingQueueImpl<E> implements BlockingQueue<E> {
 private List<E> queue = new LinkedList<>();
+private Lock monitor = new ReentrantLock();
+private Condition producerWaitingCondition = monitor.newCondition();
+private Condition consumerWaitingCondition = monitor.newCondition();
+private final int HEAD = 0;
 private int capacity;
-//TODO additional fields consider Lock, Condition
+
 	public MyBlockingQueueImpl(int capacity) {
 		this.capacity = capacity;
 	}
 	public MyBlockingQueueImpl() {
 		this(Integer.MAX_VALUE);
 	}
+	
 	@Override
 	public E remove() {
-		// TODO Auto-generated method stub
-		return null;
+		monitor.lock();
+		try {
+			if(queue.size() == 0) {
+				throw new NoSuchElementException();
+			}
+			return queue.remove(HEAD);
+		} finally {
+			monitor.unlock();
+		}
 	}
 
 	@Override
 	public E poll() {
-		// TODO Auto-generated method stub
-		return null;
+		monitor.lock();
+		try {
+			E res = null;
+			if(queue.size() != 0) {
+				res = queue.get(HEAD);
+				queue.remove(HEAD);
+			}
+			producerWaitingCondition.signal();
+			return res;
+		} finally {
+			monitor.unlock();
+		}
 	}
 
 	@Override
 	public E element() {
-		// TODO Auto-generated method stub
-		return null;
+		monitor.lock();
+		try {
+			return queue.get(HEAD);
+		} catch(Exception e) {
+			throw new NoSuchElementException();
+		} finally {
+			monitor.unlock();
+		} 
 	}
 
 	@Override
 	public E peek() {
-		// TODO Auto-generated method stub
-		return null;
+		monitor.lock();
+		try {
+			return queue.size() == 0 ? null : queue.get(HEAD);
+		} finally {
+			monitor.unlock();
+		}
 	}
 
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		monitor.lock();
+		try {
+			return queue.size();
+		} finally {
+			monitor.unlock();
+		}
 	}
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+		monitor.lock();
+		try {
+			return queue.size() == 0;
+		} finally {
+			monitor.unlock();
+		}
 	}
 
 	@Override
 	public Iterator<E> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		monitor.lock();
+		try {
+			return queue.iterator();
+		} finally {
+			monitor.unlock();
+		}
 	}
 
 	@Override
 	public Object[] toArray() {
-		// TODO Auto-generated method stub
-		return null;
+		monitor.lock();
+		try {
+			return queue.toArray();
+		} finally {
+			monitor.unlock();
+		}
 	}
 
 	@Override
 	public <T> T[] toArray(T[] a) {
-		// TODO Auto-generated method stub
-		return null;
+		monitor.lock();
+		try {
+			return queue.toArray(a);
+		} finally {
+			monitor.unlock();
+		}
 	}
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		// TODO Auto-generated method stub
-		return false;
+		monitor.lock();
+		try {
+			return queue.containsAll(c);
+		} finally {
+			monitor.unlock();
+		}
 	}
 
 	@Override
 	public boolean addAll(Collection<? extends E> c) {
-		// TODO Auto-generated method stub
-		return false;
+		monitor.lock();
+		try {
+			return queue.addAll(c);
+		} finally {
+			monitor.unlock();
+		}
 	}
 
 	@Override
 	public boolean removeAll(Collection<?> c) {
-		// TODO Auto-generated method stub
-		return false;
+		monitor.lock();
+		try {
+			return queue.removeAll(c);
+		} finally {
+			monitor.unlock();
+		}
 	}
 
 	@Override
 	public boolean retainAll(Collection<?> c) {
-		// TODO Auto-generated method stub
-		return false;
+		monitor.lock();
+		try {
+			return queue.retainAll(c);
+		} finally {
+			monitor.unlock();
+		}
 	}
 
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
-
+		monitor.lock();
+		try {
+			queue.clear();
+		} finally {
+			monitor.unlock();
+		}
 	}
 
 	@Override
 	public boolean add(E e) {
-		// TODO Auto-generated method stub
-		return false;
+		monitor.lock();
+		try {
+			if(queue.size() == capacity) {
+				throw new IllegalStateException();
+			}
+			boolean res = queue.add(e);
+			consumerWaitingCondition.signal();
+			return res;
+		} finally {
+			monitor.unlock();
+		}
 	}
 
 	@Override
 	public boolean offer(E e) {
-		// TODO Auto-generated method stub
-		return false;
+		monitor.lock();
+		try {
+			if(queue.size() == capacity) {
+				return false;
+			}
+			queue.add(e);
+			consumerWaitingCondition.signal();
+			return true;
+		} finally {
+			monitor.unlock();
+		}
+		
 	}
 
 	@Override
 	public void put(E e) throws InterruptedException {
-		// TODO Auto-generated method stub
-
+		monitor.lock();
+		try {
+			while(queue.size() == capacity) {
+				producerWaitingCondition.await();
+			}
+			queue.add(e);
+			consumerWaitingCondition.signal();
+		} finally {
+			monitor.unlock();
+		}
 	}
 
 	@Override
 	public boolean offer(E e, long timeout, TimeUnit unit) throws InterruptedException {
-		// TODO Auto-generated method stub
-		return false;
+		monitor.lock();
+		try {
+			while(queue.size() == capacity) {
+				producerWaitingCondition.await(timeout, unit);
+			}
+			if(queue.size() == capacity) {
+				return false;
+			}
+			queue.add(e);
+			consumerWaitingCondition.signal();
+			return true;
+		} finally {
+			monitor.unlock();
+		}
 	}
 
 	@Override
 	public E take() throws InterruptedException {
-		// TODO Auto-generated method stub
-		return null;
+		monitor.lock();
+		try {	
+			while(queue.size() == 0) {
+				consumerWaitingCondition.await();
+			}
+			E res = queue.get(HEAD);
+			queue.remove(HEAD);
+			producerWaitingCondition.signal();
+			return res;
+		} finally {
+			monitor.unlock();
+		}
 	}
 
 	@Override
 	public E poll(long timeout, TimeUnit unit) throws InterruptedException {
-		// TODO Auto-generated method stub
-		return null;
+		monitor.lock();
+		try {
+			E res = null;
+			while(queue.size() == 0) {
+				consumerWaitingCondition.await(timeout, unit);
+			}
+			if(queue.size() != 0) {
+				res = queue.get(HEAD);
+				queue.remove(HEAD);
+			}
+			producerWaitingCondition.signal();
+			return res;
+		} finally {
+			monitor.unlock();
+		}
 	}
 
 	@Override
-	public int remainingCapacity() {
-		// TODO Auto-generated method stub
-		return 0;
+	public int remainingCapacity() {		
+		monitor.lock();
+		try {
+			return capacity - queue.size();
+		} finally {
+			monitor.unlock();
+		}
 	}
 
 	@Override
@@ -148,9 +287,13 @@ private int capacity;
 	}
 
 	@Override
-	public boolean contains(Object o) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean contains(Object o) {	
+		monitor.lock();
+		try {
+			return queue.contains(o);
+		} finally {
+			monitor.unlock();
+		}
 	}
 
 	@Override
