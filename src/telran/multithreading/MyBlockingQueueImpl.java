@@ -177,9 +177,12 @@ private int capacity;
 
 	@Override
 	public boolean add(E e) {
+		if(e == null) {
+			throw new NullPointerException();
+		}
 		monitor.lock();
 		try {
-			if(queue.size() == capacity || e == null) {
+			if(queue.size() == capacity) {
 				throw new IllegalStateException();
 			}
 			boolean res = queue.add(e);
@@ -192,9 +195,12 @@ private int capacity;
 
 	@Override
 	public boolean offer(E e) {
+		if(e == null) {
+			throw new NullPointerException();
+		}
 		monitor.lock();
 		try {
-			if(queue.size() == capacity || e == null) {
+			if(queue.size() == capacity) {
 				return false;
 			}
 			queue.add(e);
@@ -208,11 +214,11 @@ private int capacity;
 
 	@Override
 	public void put(E e) throws InterruptedException {
+		if(e == null) {
+			throw new NullPointerException();
+		}
 		monitor.lock();
 		try {
-			if(e == null) {
-				throw new NullPointerException();
-			}
 			while(queue.size() == capacity) {
 				producerWaitingCondition.await();
 			}
@@ -225,12 +231,15 @@ private int capacity;
 
 	@Override
 	public boolean offer(E e, long timeout, TimeUnit unit) throws InterruptedException {
+		if(e == null) {
+			throw new NullPointerException();
+		}
 		monitor.lock();
 		try {
 			while(queue.size() == capacity) {
 				producerWaitingCondition.await(timeout, unit);
 			}
-			if(queue.size() == capacity || e == null) {
+			if(queue.size() == capacity) {
 				return false;
 			}
 			queue.add(e);
