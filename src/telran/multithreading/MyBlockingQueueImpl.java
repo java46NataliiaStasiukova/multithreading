@@ -179,7 +179,7 @@ private int capacity;
 	public boolean add(E e) {
 		monitor.lock();
 		try {
-			if(queue.size() == capacity) {
+			if(queue.size() == capacity || e == null) {
 				throw new IllegalStateException();
 			}
 			boolean res = queue.add(e);
@@ -194,7 +194,7 @@ private int capacity;
 	public boolean offer(E e) {
 		monitor.lock();
 		try {
-			if(queue.size() == capacity) {
+			if(queue.size() == capacity || e == null) {
 				return false;
 			}
 			queue.add(e);
@@ -210,6 +210,9 @@ private int capacity;
 	public void put(E e) throws InterruptedException {
 		monitor.lock();
 		try {
+			if(e == null) {
+				throw new NullPointerException();
+			}
 			while(queue.size() == capacity) {
 				producerWaitingCondition.await();
 			}
@@ -227,7 +230,7 @@ private int capacity;
 			while(queue.size() == capacity) {
 				producerWaitingCondition.await(timeout, unit);
 			}
-			if(queue.size() == capacity) {
+			if(queue.size() == capacity || e == null) {
 				return false;
 			}
 			queue.add(e);

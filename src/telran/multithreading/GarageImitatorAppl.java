@@ -13,7 +13,8 @@ static final long MAX_SERVICE_TIME = 600;
 static final int N_WORKERS = 30;//50
 static final int PROB_CAR_MIN = 15;
 static final int CAPACITY = 15;//40
-static BlockingQueue<Car> cars = new LinkedBlockingQueue<>(CAPACITY);//NyBlockingQueue
+//static BlockingQueue<Car> cars = new LinkedBlockingQueue<>(CAPACITY);
+static MyBlockingQueueImpl<Car> cars = new MyBlockingQueueImpl<>(CAPACITY);
 static int rejectsCounter = 0;
 static int carsCounter = 0;
 	public static void main(String[] args) throws InterruptedException {

@@ -3,9 +3,10 @@ package telran.multithreading;
 import java.util.concurrent.*;
 
 public class Worker extends Thread {
-private BlockingQueue<Car> cars;
+//private BlockingQueue<Car> cars;
+	private MyBlockingQueueImpl<Car> cars;
 private volatile boolean running = true;
-public Worker(BlockingQueue<Car> cars) {
+public Worker(MyBlockingQueueImpl<Car> cars) {
 	this.cars = cars;
 }
 	@Override
