@@ -136,6 +136,9 @@ private int capacity;
 	public boolean addAll(Collection<? extends E> c) {
 		monitor.lock();
 		try {
+			if(capacity - queue.size() < c.size()) {
+				return false;
+			}
 			return queue.addAll(c);
 		} finally {
 			monitor.unlock();
