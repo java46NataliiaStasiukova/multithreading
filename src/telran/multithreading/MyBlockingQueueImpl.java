@@ -28,7 +28,9 @@ private int capacity;
 			if(queue.size() == 0) {
 				throw new NoSuchElementException();
 			}
-			return queue.remove(HEAD);
+			E res = queue.remove(HEAD);
+			producerWaitingCondition.signal();
+			return res;
 		} finally {
 			monitor.unlock();
 		}
@@ -40,8 +42,7 @@ private int capacity;
 		try {
 			E res = null;
 			if(queue.size() != 0) {
-				res = queue.get(HEAD);
-				queue.remove(HEAD);
+				res  = queue.remove(HEAD);
 			}
 			producerWaitingCondition.signal();
 			return res;
@@ -66,7 +67,9 @@ private int capacity;
 	public E peek() {
 		monitor.lock();
 		try {
-			return queue.size() == 0 ? null : queue.get(HEAD);
+			E res = queue.size() == 0 ? null : queue.get(HEAD);
+			producerWaitingCondition.signal();
+			return res;
 		} finally {
 			monitor.unlock();
 		}
@@ -149,6 +152,7 @@ private int capacity;
 	public boolean removeAll(Collection<?> c) {
 		monitor.lock();
 		try {
+			producerWaitingCondition.signal();
 			return queue.removeAll(c);
 		} finally {
 			monitor.unlock();
@@ -159,6 +163,7 @@ private int capacity;
 	public boolean retainAll(Collection<?> c) {
 		monitor.lock();
 		try {
+			producerWaitingCondition.signal();
 			return queue.retainAll(c);
 		} finally {
 			monitor.unlock();
@@ -170,6 +175,7 @@ private int capacity;
 		monitor.lock();
 		try {
 			queue.clear();
+			producerWaitingCondition.signal();
 		} finally {
 			monitor.unlock();
 		}

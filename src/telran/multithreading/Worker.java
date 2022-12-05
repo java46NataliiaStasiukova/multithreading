@@ -1,6 +1,6 @@
 package telran.multithreading;
 
-import java.util.concurrent.*;
+//import java.util.concurrent.*;
 
 public class Worker extends Thread {
 //private BlockingQueue<Car> cars;
