@@ -43,10 +43,12 @@ public class NumberGroups {
 
 			}
 		}
+		executor.shutdown();
 		try {
-			executor.awaitTermination(10, TimeUnit.SECONDS);
+			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
 		} catch (InterruptedException e) {
 		
+			e.printStackTrace();
 		}
 		while(queue.size() != 0) {
 			res.addAndGet(queue.element().getRes());
