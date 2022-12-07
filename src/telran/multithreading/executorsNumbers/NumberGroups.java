@@ -12,9 +12,9 @@ public class NumberGroups {
 
 	private int[][] groups;
 	private int nThreads = 4;
-	public ExecutorService executor;
+	private ExecutorService executor;
 	
-	public BlockingQueue<OneGroupSum> queue = new LinkedBlockingQueue<>();
+	private BlockingQueue<OneGroupSum> queue = new LinkedBlockingQueue<>();
 	private AtomicLong res = new AtomicLong(0);
 	
 	
