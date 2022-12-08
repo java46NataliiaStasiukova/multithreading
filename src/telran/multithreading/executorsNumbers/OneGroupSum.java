@@ -1,27 +1,22 @@
 package telran.multithreading.executorsNumbers;
 
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Arrays;
+import java.util.concurrent.Callable;
 
-public class OneGroupSum implements Runnable{
+public class OneGroupSum implements Callable<Long>{
 
 	private int[] group;
-	private Long res;
-	private AtomicLong  atomicLong= new AtomicLong(0);
 	
 	public OneGroupSum(int[] group) {
 		this.group = group;
 	}
+	
 	@Override
-	public void run() {
-		for(int i = 0; i < group.length; i++) {
-				res = atomicLong.addAndGet(group[i]);
-        }
-
+	public Long call() {
+		
+		return Arrays.stream(group).asLongStream().sum();
 	}
-	public Long getRes() {
 
-		return res;
-	}
 	
 	
 }

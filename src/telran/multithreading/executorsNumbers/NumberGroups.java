@@ -1,22 +1,17 @@
 package telran.multithreading.executorsNumbers;
 
 
-import java.util.concurrent.BlockingQueue;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.Future;
 
 public class NumberGroups {
 
 	private int[][] groups;
 	private int nThreads = 4;
-	private ExecutorService executor;
-	
-	private BlockingQueue<OneGroupSum> queue = new LinkedBlockingQueue<>();
-	private AtomicLong res = new AtomicLong(0);
-	
 	
 	public NumberGroups(int[][] groups) {
 		this.groups = groups;
@@ -32,29 +27,17 @@ public class NumberGroups {
 	}
 
 	public long computeSum() {
-		executor = Executors.newFixedThreadPool(this.nThreads);
-		for(int i = 0; i < groups.length; i++) {
-			OneGroupSum group = new OneGroupSum(groups[i]);
+		ExecutorService executor = Executors.newFixedThreadPool(nThreads);
+		List<Future<Long>> groupSums =
+				Arrays.stream(groups).map(OneGroupSum::new)//(group -> new OneGroupSum(group))
+				.map(executor::submit).toList();//.map(ogs -> executor.submit(ogs))
+		return groupSums.stream().mapToLong(value -> {
 			try {
-				queue.put(group);
-				executor.execute(group);
-				
-			} catch (InterruptedException e) {
-
+				return value.get();
+			} catch (InterruptedException | ExecutionException e) {
+				throw new IllegalStateException();
 			}
-		}
-		executor.shutdown();
-		try {
-			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
-		} catch (InterruptedException e) {
-		
-			e.printStackTrace();
-		}
-		while(queue.size() != 0) {
-			res.addAndGet(queue.element().getRes());
-			queue.remove();
-		}
-		 return res.get();
+		}).sum();
 	}
 	
 	

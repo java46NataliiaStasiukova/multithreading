@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 class NumbersGroupTest {
-	private static final int N_RUNS = 10;
+	private static final int N_RUNS = 5;
 	private static final int N_GROUPS = 10000;
 	private static final int N_NUMBERS_IN_GROUP = 10000;
 	private final int MIN = 0;
